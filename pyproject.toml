@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "svcs-rag"
+version = "0.1.0"
+description = ""
+authors = ["Noel O'Connor <noel.oconnor@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11.7"
+beautifulsoup4 = "^4.12.3"
+requests = "^2.31.0"
+langchain-community = "^0.0.17"
+langchain = "^0.1.5"
+faiss-cpu = "1.7.4"
+openai = "^1.11.0"
+tiktoken = "^0.5.2"
+chainlit = "^1.0.200"
+langchain-openai = "^0.0.5"
+llama-index = "^0.9.43"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
