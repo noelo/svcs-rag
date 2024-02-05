@@ -6,10 +6,18 @@ import requests
 from bs4 import BeautifulSoup as Soup
 from typing import List
 from datetime import datetime
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain.docstore.document import Document
-from langchain.embeddings import OpenAIEmbeddings
+import faiss
+from llama_index.schema import Document
+from llama_index import (
+    VectorStoreIndex,
+    StorageContext,
+)
+from llama_index.vector_stores.faiss import FaissVectorStore
+from llama_index import VectorStoreIndex
+from llama_index.embeddings import OpenAIEmbedding
+from llama_index.text_splitter import SentenceSplitter
+from llama_index.ingestion import IngestionPipeline, IngestionCache
+from llama_index import ServiceContext
 
 
 def crawl_site(root_url:str) -> {}:
@@ -60,10 +68,8 @@ def page_to_document(page_meta_data: {}, page_content: str) -> Document:
     }
 
     doc = Document(
-        page_content=page_content,
-        metadata={
-            **main_meta,
-        },
+        text=page_content,
+        metadata={**main_meta,},
     )
     return doc
     
@@ -72,25 +78,43 @@ def main():
     openai.api_key = os.environ["OPENAI_API_KEY"]
     root_url = os.environ["ROOT_URL"]
 
-    llm_embedding = OpenAIEmbeddings()
-
-    # TODO: remove
-    # root_url = "https://www.redhat.com/rhdc/jsonapi/solr_search/training"
+    # llm_embedding = OpenAIEmbeddings()
 
     pages = crawl_site(root_url)
     documents= load_and_parse_documents(pages)
     logging.info(f"Returned {len(documents)}")
 
+    vector_store = FaissVectorStore(faiss_index=faiss.IndexFlatL2(1536))
+    # storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    pipeline = IngestionPipeline(
+        transformations=[
+            SentenceSplitter(chunk_size=500, chunk_overlap=120),
+            OpenAIEmbedding(),
+        ],
+        vector_store=vector_store,
+    )
+
+    nodes = pipeline.run(documents=documents)
+    index = VectorStoreIndex(nodes)
+
+    index.storage_context.persist(persist_dir="/var/home/noelo/dev/svcs-rag/faissdb")
+
+
+
+
+
+
     
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    logging.info(f"RecursiveCharacterTextSplitter Start : {datetime.now()}")
-    docs = text_splitter.split_documents(documents)
-    logging.info(f"RecursiveCharacterTextSplitter End : {datetime.now()}")
-    logging.info(f"RecursiveCharacterTextSplitter Split into {len(docs)} chunks of text")
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    # logging.info(f"RecursiveCharacterTextSplitter Start : {datetime.now()}")
+    # # docs = text_splitter.split_documents(documents)
+    # logging.info(f"RecursiveCharacterTextSplitter End : {datetime.now()}")
+    # logging.info(f"RecursiveCharacterTextSplitter Split into {len(docs)} chunks of text")
        
 
-    db = FAISS.from_documents(docs, llm_embedding)
-    db.save_local("/var/home/noelo/dev/svcs-rag/faissdb")
+    # db = FAISS.from_documents(docs, llm_embedding)
+    # db.save_local("/var/home/noelo/dev/svcs-rag/faissdb")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
