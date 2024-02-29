@@ -4,7 +4,10 @@ from bs4 import BeautifulSoup as Soup
 from typing import List
 from datetime import datetime
 import faiss
-from llama_index.schema import Document
+import chainlit as cl
+import chainlit.data as cl_data
+from customchainlitds import TestDataLayer
+
 from llama_index import (
     StorageContext,
     load_index_from_storage,
@@ -14,20 +17,23 @@ from llama_index import (
     ServiceContext,
     get_response_synthesizer,
 )
+from llama_index.schema import Document
 from llama_index.retrievers import VectorIndexRetriever
 from llama_index.query_engine import RetrieverQueryEngine
 from llama_index.postprocessor import SimilarityPostprocessor
-
+from llama_index.prompts import PromptTemplate
+from llama_index.callbacks.base import CallbackManager
 from llama_index.response_synthesizers import (
     ResponseMode,
     get_response_synthesizer,
 )
-from llama_index.prompts import PromptTemplate
-from llama_index.callbacks.base import CallbackManager
-import chainlit as cl
+
+
 
 logging.basicConfig(level=logging.DEBUG)
-storage_context = StorageContext.from_defaults(persist_dir="/var/home/noelo/dev/svcs-rag/faissdb")
+storage_context = StorageContext.from_defaults(
+    persist_dir="/var/home/noelo/dev/svcs-rag/faissdb"
+)
 
 # load index
 index = load_index_from_storage(storage_context)
@@ -36,7 +42,6 @@ retriever = VectorIndexRetriever(
     index=index,
     similarity_top_k=10,
 )
-
 
 
 qa_prompt = PromptTemplate(
@@ -88,12 +93,18 @@ refine_prompt = PromptTemplate(
 """
 )
 
+cl_data._data_layer = TestDataLayer()
+
 @cl.on_chat_start
 async def factory():
-    service_context = ServiceContext.from_defaults(callback_manager=CallbackManager([cl.LlamaIndexCallbackHandler()]),)
+    service_context = ServiceContext.from_defaults(
+        callback_manager=CallbackManager([cl.LlamaIndexCallbackHandler()]),
+    )
 
     # configure response synthesizer
-    response_synthesizer = get_response_synthesizer(text_qa_template=qa_prompt,refine_template=refine_prompt)
+    response_synthesizer = get_response_synthesizer(
+        text_qa_template=qa_prompt, refine_template=refine_prompt
+    )
 
     # assemble query engine
     query_engine = RetrieverQueryEngine.from_args(
@@ -102,22 +113,18 @@ async def factory():
         response_synthesizer=response_synthesizer,
         node_postprocessors=[SimilarityPostprocessor(similarity_cutoff=0.7)],
         response_mode=ResponseMode.NO_TEXT,
-        verbose=True, 
+        verbose=True,
         streaming=True,
     )
     cl.user_session.set("query_engine", query_engine)
 
+
 @cl.on_message
 async def main(message: cl.Message):
-    query_engine = cl.user_session.get("query_engine")  # type: RetrieverQueryEngine
+    query_engine = cl.user_session.get("query_engine") 
     response = await cl.make_async(query_engine.query)(message.content)
 
     response_message = cl.Message(content="")
-
-    print (response.__class__)
-    print (response.__class__.__name__)
-    print (response)
-
 
     response_message.content = f"{response}"
 

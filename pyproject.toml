@@ -16,7 +16,7 @@ openai = "^1.11.0"
 tiktoken = "^0.5.2"
 langchain-openai = "^0.0.5"
 llama-index = "^0.9.43"
-chainlit = "^1.0.200"
+chainlit = "^1.0.301"
 
 [build-system]
 requires = ["poetry-core"]
