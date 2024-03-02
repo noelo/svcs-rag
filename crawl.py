@@ -6,13 +6,17 @@ import requests
 from bs4 import BeautifulSoup as Soup
 from typing import List
 from datetime import datetime
-import faiss
+
 from llama_index.schema import Document
 from llama_index import (
     VectorStoreIndex,
     StorageContext,
 )
-from llama_index.vector_stores.faiss import FaissVectorStore
+# import faiss
+# from llama_index.vector_stores.faiss import FaissVectorStore
+from llama_index.vector_stores.chroma import ChromaVectorStore
+import chromadb
+
 from llama_index import VectorStoreIndex
 from llama_index.embeddings import OpenAIEmbedding
 from llama_index.text_splitter import SentenceSplitter
@@ -33,7 +37,7 @@ def crawl_site(root_url:str) -> {}:
             json_dict = json.loads(page.text)
 
             if (len(json_dict["body"]["docs"])) < 1:
-                print("Finished...")
+                print("Finished crawling...")
                 break
             for i in json_dict["body"]["docs"]:
                 page_list.append(
@@ -80,24 +84,27 @@ def main():
 
     pages = crawl_site(root_url)
     documents= load_and_parse_documents(pages)
-    logging.info(f"Returned {len(documents)}")
+    logging.info(f"Returned {len(documents)} Documents")
 
-    vector_store = FaissVectorStore(faiss_index=faiss.IndexFlatL2(1536))
-    # storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    db = chromadb.PersistentClient(path="/var/home/noelo/dev/svcs-rag/chromadb")
+    chroma_collection = db.get_or_create_collection("quickstart")
+    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     pipeline = IngestionPipeline(
         transformations=[
-            SentenceSplitter(chunk_size=500, chunk_overlap=120),
+            SentenceSplitter(chunk_size=200, chunk_overlap=50),
             OpenAIEmbedding(),
         ],
-        vector_store=vector_store,
+        vector_store=vector_store
     )
 
     nodes = pipeline.run(documents=documents)
-    index = VectorStoreIndex(nodes)
-
-    index.storage_context.persist(persist_dir="/var/home/noelo/dev/svcs-rag/faissdb")
+    
+    index = VectorStoreIndex(nodes=nodes,show_progress=True)
+    print(f"Nodes created {len(nodes)}")
+    index.storage_context.persist(persist_dir="/var/home/noelo/dev/svcs-rag/chromadb")
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     main()
