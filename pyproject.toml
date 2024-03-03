@@ -19,6 +19,8 @@ llama-index = "^0.9.43"
 chainlit = "^1.0.301"
 chromadb = "^0.4.24"
 rank-bm25 = "^0.2.2"
+debugpy = "^1.8.1"
+flagembedding = "^1.2.5"
 
 [build-system]
 requires = ["poetry-core"]
