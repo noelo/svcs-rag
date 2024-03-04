@@ -27,9 +27,6 @@ import chromadb
 from chromadb.config import Settings
 
 
-from llama_index import QueryBundle
-from llama_index.retrievers import BaseRetriever
-from llama_index.schema import NodeWithScore
 from llama_index.postprocessor.flag_embedding_reranker import FlagEmbeddingReranker
 from FusionRetriever import FusionRetriever
 
@@ -40,6 +37,13 @@ class RagEngine:
         logging.basicConfig(level=logging.DEBUG)
 
         set_global_handler("simple")
+        
+        logging.info("loading from FlagEmbeddingReranker")
+        self.reranker = FlagEmbeddingReranker(
+            top_n=10,
+            model="BAAI/bge-reranker-large",
+            use_fp16=False
+        )
 
         logging.info("loading from ChromaDB")
         db2 = chromadb.PersistentClient(path="/var/home/noelo/dev/svcs-rag/chromadb",settings=Settings(anonymized_telemetry=False))
@@ -50,12 +54,7 @@ class RagEngine:
         docstore = SimpleDocumentStore.from_persist_path("/var/home/noelo/dev/svcs-rag/chromadb/docstore.json")
         logging.info("loading from ChromaDB....done")
 
-        logging.info("loading from FlagEmbeddingReranker")
-        self.reranker = FlagEmbeddingReranker(
-            top_n=10,
-            model="BAAI/bge-reranker-large",
-            use_fp16=False
-        )
+
         logging.info("loading from FlagEmbeddingReranker....done")
 
 
