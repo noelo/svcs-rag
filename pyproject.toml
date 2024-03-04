@@ -6,7 +6,7 @@ authors = ["Noel O'Connor <noel.oconnor@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11.7"
+python = "^3.11.5"
 beautifulsoup4 = "^4.12.3"
 requests = "^2.31.0"
 langchain-community = "^0.0.17"
