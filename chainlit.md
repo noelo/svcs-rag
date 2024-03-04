@@ -1,14 +1,22 @@
-# Welcome to Chainlit! 🚀🤖
+# Welcome to Red Hat Services Chatbot!!🚀🤖
 
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
+This Chatbot can answer questions about what Red Hat Consulting Services and Red Hat Training.
+All data is based on information available from [RedHat.com](https://www.redhat.com).
 
-## Useful Links 🔗
+To ask a question just type your query in the Query Box at the bottom of the page
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+## Example Queries 
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
+* "How can Red Hat help with enterprise automation?"
 
-## Welcome screen
+* "What training can help with microservices ?"
 
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+* "How can Red Hat help with Digital Transformation?"
+
+* "What courses are needed for RHCSA ?
+
+* "Where do I start with learning OpenShift?"
+
+* "What advanced OpenShift courses are available ?"
+
+* "What RHEL courses contain exams ?"

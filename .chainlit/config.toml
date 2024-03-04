@@ -1,6 +1,6 @@
 [project]
 # Whether to enable telemetry (default: true). No personal data is collected.
-enable_telemetry = true
+enable_telemetry = false
 
 
 # List of environment variables to be provided by each user to use the app.
@@ -20,7 +20,7 @@ allow_origins = ["*"]
 
 [features]
 # Show the prompt playground
-prompt_playground = true
+prompt_playground = false
 
 # Process and display HTML in messages. This can be a security risk (see https://stackoverflow.com/questions/19603097/why-is-it-dangerous-to-render-user-generated-html-or-javascript)
 unsafe_allow_html = false
@@ -29,7 +29,7 @@ unsafe_allow_html = false
 latex = false
 
 # Authorize users to upload files with messages
-multi_modal = true
+multi_modal = false
 
 # Allows user to use speech to text
 [features.speech_to_text]
@@ -39,10 +39,10 @@ multi_modal = true
 
 [UI]
 # Name of the app and chatbot.
-name = "Chatbot"
+name = "Red Hat Services Chatbot"
 
 # Show the readme while the thread is empty.
-show_readme_as_default = true
+show_readme_as_default = false
 
 # Description of the app and chatbot. This is used for HTML tags.
 # description = ""
@@ -68,10 +68,10 @@ hide_cot = false
 
 # Override default MUI light theme. (Check theme.ts)
 [UI.theme]
-    #font_family = "Inter, sans-serif"
+    font_family = "RedHatDisplay, Mono"
 [UI.theme.light]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
+    #background = "#ee0000"
+    #paper = "#f2f2f2"
 
     [UI.theme.light.primary]
         #main = "#F80061"
@@ -80,11 +80,11 @@ hide_cot = false
 
 # Override default MUI dark theme. (Check theme.ts)
 [UI.theme.dark]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
+    background = "#707070"
+    paper = "#ee0000"
 
     [UI.theme.dark.primary]
-        #main = "#F80061"
+        main = "#e0e0e0"
         #dark = "#980039"
         #light = "#FFE7EB"
 

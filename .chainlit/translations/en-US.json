@@ -50,7 +50,7 @@
                 },
                 "inputBox": {
                     "input": {
-                        "placeholder": "Type your message here..."
+                        "placeholder": "How can Red Hat Services help you today ?"
                     },
                     "speechButton": {
                         "start": "Start recording",
@@ -64,7 +64,7 @@
                         "attachFiles": "Attach files"
                     },
                     "waterMark": {
-                        "text": "Built with"
+                        "text": "Built by Red Hat Powered By"
                     }
                 },
                 "Messages": {
@@ -129,7 +129,7 @@
             },
             "header": {
                 "chat": "Chat",
-                "readme": "Readme"
+                "readme": "Instructions"
             }
         }
     },
