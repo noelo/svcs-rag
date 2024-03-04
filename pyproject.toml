@@ -21,6 +21,7 @@ chromadb = "^0.4.24"
 rank-bm25 = "^0.2.2"
 debugpy = "^1.8.1"
 flagembedding = "^1.2.5"
+pysqlite3-binary = "^0.5.2.post3"
 
 [build-system]
 requires = ["poetry-core"]
