@@ -15,6 +15,10 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 ENV POETRY_NO_INTERACTION=1 
 ENV POETRY_CACHE_DIR=/tmp/poetry_cache
 
+RUN mkdir -p /opt/app-root/data
+
+COPY chromadb /opt/app-root/data
+
 WORKDIR /opt/app-root/src
 
 RUN git clone https://github.com/noelo/svcs-rag
@@ -24,5 +28,7 @@ WORKDIR /opt/app-root/src/svcs-rag
 RUN poetry install --only main --no-root && rm -rf $POETRY_CACHE_DIR
 
 COPY --chmod=755 start-chainlit.sh /opt/app-root/src/svcs-rag/start-chainlit.sh
+
+ENV CHROMA_DB_LOCN=/opt/app-root/data
 
 ENTRYPOINT /opt/app-root/src/svcs-rag/start-chainlit.sh

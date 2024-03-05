@@ -1,3 +1,8 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+import os
 import logging
 from typing import List
 from typing import Any, List
@@ -43,15 +48,17 @@ class RagEngine:
             top_n=10,
             model="BAAI/bge-reranker-large",
             use_fp16=False
-        )
+        )        
 
-        logging.info("loading from ChromaDB")
-        db2 = chromadb.PersistentClient(path="/var/home/noelo/dev/svcs-rag/chromadb",settings=Settings(anonymized_telemetry=False))
+        dataStoreLocn = os.environ.get("CHROMA_DB_LOCN", "localhost:5432")
+
+        logging.info(f"loading from ChromaDB from {dataStoreLocn}")
+        db2 = chromadb.PersistentClient(path=dataStoreLocn,settings=Settings(anonymized_telemetry=False))
         chroma_collection = db2.get_or_create_collection("quickstart")
         vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
         index = VectorStoreIndex.from_vector_store(vector_store)
-        docstore = SimpleDocumentStore.from_persist_path("/var/home/noelo/dev/svcs-rag/chromadb/docstore.json")
+        docstore = SimpleDocumentStore.from_persist_path(dataStoreLocn+"docstore.json")
         logging.info("loading from ChromaDB....done")
 
 
