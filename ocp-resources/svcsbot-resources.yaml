@@ -7,10 +7,10 @@ items:
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     labels:
-      app: svcsbot
-      app.kubernetes.io/component: svcsbot
-      app.kubernetes.io/instance: svcsbot
-    name: svcsbot
+      app: svcs-bot
+      app.kubernetes.io/component: svcs-bot
+      app.kubernetes.io/instance: svcs-bot
+    name: svcs-bot
   spec:
     lookupPolicy:
       local: false
@@ -31,19 +31,19 @@ items:
   kind: Deployment
   metadata:
     annotations:
-      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"svcsbot:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"svcsbot\")].image"}]'
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"svcs-bot:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"svcs-bot\")].image"}]'
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     labels:
-      app: svcsbot
-      app.kubernetes.io/component: svcsbot
-      app.kubernetes.io/instance: svcsbot
-    name: svcsbot
+      app: svcs-bot
+      app.kubernetes.io/component: svcs-bot
+      app.kubernetes.io/instance: svcs-bot
+    name: svcs-bot
   spec:
     replicas: 1
     selector:
       matchLabels:
-        deployment: svcsbot
+        deployment: svcs-bot
     strategy: {}
     template:
       metadata:
@@ -51,26 +51,29 @@ items:
           openshift.io/generated-by: OpenShiftNewApp
         creationTimestamp: null
         labels:
-          deployment: svcsbot
+          deployment: svcs-bot
       spec:
         containers:
         - env:
           - name: CHROMA_DB_LOCN
-            value: /opt/app-root/data
-          - name: OPENAI_API_KEY
+            value: /opt/app-root/data/
           - name: OPENAI_API_KEY
             valueFrom:
               secretKeyRef:
                 name: openaicreds
                 key: password
-          image: svcsbot:latest
-          name: svcsbot
+          image: svcs-bot:latest
+          name: svcs-bot
           ports:
           - containerPort: 8000
             protocol: TCP
-          - containerPort: 8080
-            protocol: TCP
           resources: {}
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 10
   status: {}
 - apiVersion: v1
   kind: Service
@@ -79,10 +82,10 @@ items:
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     labels:
-      app: svcsbot
-      app.kubernetes.io/component: svcsbot
-      app.kubernetes.io/instance: svcsbot
-    name: svcsbot
+      app: svcs-bot
+      app.kubernetes.io/component: svcs-bot
+      app.kubernetes.io/instance: svcs-bot
+    name: svcs-bot
   spec:
     ports:
     - name: 8000-tcp
@@ -94,7 +97,7 @@ items:
       protocol: TCP
       targetPort: 8080
     selector:
-      deployment: svcsbot
+      deployment: svcs-bot
   status:
     loadBalancer: {}
 kind: List
