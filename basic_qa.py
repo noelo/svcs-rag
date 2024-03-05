@@ -11,9 +11,9 @@ from llama_index.query_engine import RetrieverQueryEngine
 import debugpy
 
 
-logging.basicConfig(level=logging.DEBUG)
-debugpy.listen(('0.0.0.0', 5678))
+logging.basicConfig(level=logging.DEBUG,stream=sys.stdout)
 
+debugpy.listen(('0.0.0.0', 5678))
 
 
 cl_data._data_layer = TestDataLayer()
