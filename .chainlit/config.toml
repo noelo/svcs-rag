@@ -42,7 +42,7 @@ multi_modal = false
 name = "Red Hat Services Chatbot"
 
 # Show the readme while the thread is empty.
-show_readme_as_default = True
+show_readme_as_default = true
 
 # Description of the app and chatbot. This is used for HTML tags.
 # description = "Red Hat Services & Training"

@@ -16,10 +16,10 @@ items:
       local: false
     tags:
     - annotations:
-        openshift.io/imported-from: quay.io/noeloc/svcs-rag
+        openshift.io/imported-from: quay.io/noeloc/svcs-bot
       from:
         kind: DockerImage
-        name: quay.io/noeloc/svcs-rag:latest
+        name: quay.io/noeloc/svcs-bot:latest
       generation: null
       importPolicy: {}
       name: latest
