@@ -29,6 +29,10 @@ RUN poetry install --only main --no-root && rm -rf $POETRY_CACHE_DIR
 
 COPY --chmod=755 start-chainlit.sh /opt/app-root/src/svcs-rag/start-chainlit.sh
 
+RUN mkdir -p /opt/app-root/src/svcs-rag/.files
+
 ENV CHROMA_DB_LOCN=/opt/app-root/data
+
+EXPOSE 8000
 
 ENTRYPOINT /opt/app-root/src/svcs-rag/start-chainlit.sh
