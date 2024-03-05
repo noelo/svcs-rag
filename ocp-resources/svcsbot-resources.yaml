@@ -100,5 +100,24 @@ items:
       deployment: svcs-bot
   status:
     loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: svcs-bot
+      app.kubernetes.io/component: svcs-bot
+      app.kubernetes.io/instance: svcs-bot
+    name: sslbot
+  spec:
+    port:
+      targetPort: 8000-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: svcs-bot
+      weight: 100
+    wildcardPolicy: None
 kind: List
 metadata: {}
