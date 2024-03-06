@@ -7,7 +7,7 @@
 from typing import Optional, Union
 
 import grpc
-import generation_pb2_grpc
+import tgis.generation_pb2_grpc as pb2_grpc
 import socket
 import ssl
 import sys
@@ -59,17 +59,24 @@ class TgisGrpcClient:
             client_cert=client_cert,
             ca_cert=ca_cert,
         )
-        self.generation_service_stub = generation_pb2_grpc.GenerationServiceStub(
+        self.generation_service_stub = pb2_grpc.GenerationServiceStub(
             self._channel
         )
 
-    def make_request(self, text: str, model_id: str = "flan-t5-small"):
-        request = generation_pb2_grpc.generation__pb2.BatchedGenerationRequest(
+    def make_batched_request(self, text: str, model_id: str = "flan-t5-small"):
+        request = pb2_grpc.generation__pb2.BatchedGenerationRequest(
             model_id=model_id,
-            requests=[generation_pb2_grpc.generation__pb2.GenerationRequest(text=text)],
+            requests=[pb2_grpc.generation__pb2.GenerationRequest(text=text)],
         )
         result = self.generation_service_stub.Generate(request=request)
-        print(result)
+        return result
+    
+    def make_stream_request(self, text: str, model_id: str = "flan-t5-small"):
+        request = pb2_grpc.generation__pb2.SingleGenerationRequest(
+            model_id=model_id,
+            request=pb2_grpc.generation__pb2.GenerationRequest(text=text),
+        )
+        result = self.generation_service_stub.GenerateStream(request=request)
         return result
 
     def __enter__(self):

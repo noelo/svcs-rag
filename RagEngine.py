@@ -29,11 +29,11 @@ from llama_index.callbacks.base import CallbackManager
 from llama_index.response_synthesizers import ResponseMode
 from llama_index.vector_stores.chroma import ChromaVectorStore
 import chromadb
-from chromadb.config import Settings
-
+from chromadb.config import Settings as ChromaSettings
 
 from llama_index.postprocessor.flag_embedding_reranker import FlagEmbeddingReranker
 from FusionRetriever import FusionRetriever
+from tgis.TGISLLM import TGISLLM
 
 
 class RagEngine:
@@ -53,7 +53,7 @@ class RagEngine:
         dataStoreLocn = os.environ.get("CHROMA_DB_LOCN", "localhost:5432")
 
         logging.info(f"loading from ChromaDB from {dataStoreLocn}")
-        db2 = chromadb.PersistentClient(path=dataStoreLocn,settings=Settings(anonymized_telemetry=False))
+        db2 = chromadb.PersistentClient(path=dataStoreLocn,settings=ChromaSettings(anonymized_telemetry=False))
         chroma_collection = db2.get_or_create_collection("quickstart")
         vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 
@@ -77,6 +77,8 @@ class RagEngine:
             similarity_top_k=20,
             verbose=True
         )
+        
+        tgisllm = TGISLLM(tgis_host="flan1-testproject1.apps.snoai.bohereen.com", tgis_port=443)
 
 
         qa_prompt = PromptTemplate(
@@ -106,7 +108,7 @@ class RagEngine:
         """
         )
         
-        service_context = ServiceContext.from_defaults(
+        service_context = ServiceContext.from_defaults(llm=tgisllm,
             callback_manager=CallbackManager([LlamaDebugHandler()]),
         )
 
@@ -114,7 +116,10 @@ class RagEngine:
         response_synthesizer = get_response_synthesizer(
             service_context=service_context,
             text_qa_template=qa_prompt,
-            verbose=True
+            verbose=True,
+            streaming=False,
+            response_mode=ResponseMode.COMPACT_ACCUMULATE,
+            use_async=True
         )
 
         self.FusionRetriever = FusionRetriever(retrievers=[self.vector_retriever, self.bm25_retriever])
@@ -124,8 +129,7 @@ class RagEngine:
             retriever=self.FusionRetriever,
             service_context=service_context,
             response_synthesizer=response_synthesizer,
-            node_postprocessors=[self.reranker],
-            response_mode=ResponseMode.TREE_SUMMARIZE,
+            # node_postprocessors=[self.reranker],
             verbose=True,
             streaming=True,
         )

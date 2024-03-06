@@ -1,7 +1,4 @@
-__import__('pysqlite3')
 import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import logging
 import chainlit as cl
 import chainlit.data as cl_data
@@ -12,8 +9,8 @@ import debugpy
 
 
 logging.basicConfig(level=logging.DEBUG,stream=sys.stdout)
-
 debugpy.listen(('0.0.0.0', 5678))
+
 
 
 cl_data._data_layer = TestDataLayer()
